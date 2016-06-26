@@ -1,26 +1,23 @@
 package truegamers.queaula;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.Gravity;
-import android.view.MotionEvent;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
@@ -39,13 +36,11 @@ import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.SwitchDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
-import static truegamers.queaula.ConfAulas.*;
-import static truegamers.queaula.ObterData.*;
+import static truegamers.queaula.FormataData.DataNumParaFeira;
+import static truegamers.queaula.FormataData.FormataData_ObtemAuto;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 //http://sec.unip.br/NotasFaltasMediaFinal.aspx?Tipo=ME&amp;Sistema=SEC
-//http://pt.stackoverflow.com/questions/13247/como-abrir-galeria-do-android
 
     //Menu Direito//
     private boolean escolhadata;
@@ -72,12 +67,13 @@ public class MainActivity extends AppCompatActivity
     //Conf de  Imagem
     private ImageView ProfImagem;
     private ImageView ProfImagemDois;
-    private Bitmap bitmap;
 
     //Botão da Semana
     private Spinner spnOpcoes;
     private boolean ApertouOBotao;
 
+    //Para uso do BD - Turma
+    private String Prof = null, Materia = null, Sigla = null, Sala = null, ProfDois = null, Turma = null;
     //Outros
     private TextView txtProf, txtSala, txtProfDois, txtSalaDois, txtApresentacao;
 
@@ -119,12 +115,8 @@ public class MainActivity extends AppCompatActivity
 
         //Todos os Views By Id
         ViewsById();
-        //Conf de  Imagem
-        ConfAulas(ObterData());
-        //Insere valores de Textos nos Componentes
-        ObterImagem();
         //Obtém a data de hoje para valores do método @InserirTextos
-        InserirTextos();
+        InserirTextos(FormataData_ObtemAuto());
         //Opções do para mudar o dia da semana
         SpinnerDias();
 
@@ -133,20 +125,16 @@ public class MainActivity extends AppCompatActivity
         spnOpcoes.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String DiaDaSemana = (String) spnOpcoes.getSelectedItem();
+                String DiaDaSemana = FormataData.DataNumParaFeira((String) spnOpcoes.getSelectedItem());
                 if (DiaDaSemana.equals("Escolha um Dia")) { //Verifica Opção Selecionada no SPN
                     if (escolhadata == true) { //Consulta Banco de Dados
                        AlertaEscolhaData();
                     }
                 } else {
-                    //Altera para a data escolhida
-                    ConfAulas(DiaDaSemana);
-                    //Altera a Imagem
-                    ObterImagem();
                     //Para não dar bug com a data
                     ApertouOBotao = true;
                     //Insere valores de Textos nos Componentes
-                    InserirTextos();
+                    InserirTextos(FormataData.DataFeiraParaNum(DiaDaSemana()));
                     //Mostra mensagem
                     Toast.makeText(getBaseContext(), parent.getItemAtPosition(position) + "-feira selecionado(a).", Toast.LENGTH_LONG).show();
                 }
@@ -157,9 +145,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
         //Atualiza as Datas
-
-        setDadosData (texto, img, getSigla(), getMateria());
-        setDadosData(textoDois, imgDois, getSiglaDois(),getMateriaDois());
+        InserirTextos(FormataData_ObtemAuto());
 
         //Menu Direito//
         //Navigation Drawer
@@ -195,22 +181,21 @@ public class MainActivity extends AppCompatActivity
         //Menu Direito//
     }
 
-    private void setDadosData (final TextView texto, ImageView img, final String Sigla, final String Materia) {
+    private void setDadosData (final TextView txtView, ImageView img, final String Sigla, final String Materia) {
         assert img != null;
         img.setOnTouchListener(new View.OnTouchListener() {
-            @SuppressLint("SetTextI18n")
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        assert texto != null;
-                        texto.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                        texto.setText("- Sigla " + Sigla + "\n- Matéria: " + Materia);
+                        assert txtView != null;
+                        txtView.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                        txtView.setText("- Sigla " + Sigla + "\n- Matéria: " + Materia);
                         break;
                     case MotionEvent.ACTION_UP:
-                        assert texto != null;
-                        texto.setBackgroundColor(getResources().getColor(R.color.cardview_light_background));
-                        texto.setText("");
+                        assert txtView != null;
+                        txtView.setBackgroundColor(getResources().getColor(R.color.cardview_light_background));
+                        txtView.setText("");
                         break;
                 }
                 return true;
@@ -238,12 +223,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_exit) {
             System.exit(0);
             return false;
@@ -265,40 +245,10 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void Randomizar(String Professor) {
-        switch (Professor) {
-            case "Lucia":
-                ProfImages.drawables = new Drawable[]{
-                        getResources().getDrawable(R.drawable.luciaa),
-                        getResources().getDrawable(R.drawable.luciab),
-                        getResources().getDrawable(R.drawable.luciac)
-                };
-                break;
-            case "Forçan":
-                ProfImages.drawables = new Drawable[]{
-                        getResources().getDrawable(R.drawable.forcan)
-                };
-                break;
-            case "Natasha":
-                ProfImages.drawables = new Drawable[]{
-                        getResources().getDrawable(R.drawable.natasha),
-                        getResources().getDrawable(R.drawable.natashaa),
-                        getResources().getDrawable(R.drawable.natashab),
-                        getResources().getDrawable(R.drawable.natashac)
-                };
-                break;
-            case "Mara":
-                ProfImages.drawables = new Drawable[]{
-                        getResources().getDrawable(R.drawable.mara)
-                };
-                break;
-        }
-    }
-
     private void AlertaEscolhaData() {
         AlertDialog alertDialog = new AlertDialog.Builder(this).create();
         alertDialog.setTitle("Atenção!");
-        alertDialog.setMessage("Hoje é: " + ObterData() + ". \n Caso queira ver outro dia, escolha a data no botão inferior!");
+        alertDialog.setMessage("Hoje é: " + FormataData_ObtemAuto() + ". \n Caso queira ver outro dia, escolha a data no botão inferior!");
         alertDialog.setButton2("Desabilitar", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 BancoController crud = new BancoController(getBaseContext());
@@ -345,27 +295,59 @@ public class MainActivity extends AppCompatActivity
         spnOpcoes.setAdapter(adpOpcoes);
     }
 
-    private void ObterImagem() {
-        //Professor Um
-        ProfImages.SetImagem(ProfImagem, getProfessor());
+    private void InserirTextos(String Data) {
+        //Coloca o Título.
+        txtApresentacao.setText(Turma+" - Noite (" + DataNumParaFeira(Data) + ")");
+        //** 1º QUADRO ** //
+        //Pega Dados do BD
+        CarregarAula(Data, "1", Prof, Sigla, Sala, Materia, txtProf, txtSala);
+        //Coloca valores nos Campos "On Touch"
+        setDadosData (texto, img, Sigla, Materia);
+        //Adiciona Imagem do Prof
+        ProfImages.SetImagem(ProfImagem, Prof);
 
-        //Professor Dois
-        ProfImages.SetImagem(ProfImagemDois, getProfessorDois());
+        //** 2º QUADRO ** //
+        //Pega Dados do BD pra segunda Aula
+        CarregarAula(Data, "2", Sala, Sigla, Sala, Materia, txtProfDois, txtSalaDois);
+        //Coloca valores nos Campos "On Touch"
+        setDadosData(textoDois, imgDois, Sigla,Materia);
+        //Adiciona Imagem do Prof
+        ProfImages.SetImagem(ProfImagemDois, ProfDois);
     }
 
-    private void InserirTextos() {
+    private void CarregarAula(String Data, String aula, String Prof, String Sigla, String Sala, String Materia, TextView txtProf, TextView txtSala) {
+        Cursor cursor = CarregaAulaBD(Data, aula);
+        if (cursor.getCount() > 0 ) {
+            String Turma = cursor.getString(cursor.getColumnIndexOrThrow(BancoCria.TRM_TURMA));
+            Prof = cursor.getString(cursor.getColumnIndexOrThrow(BancoCria.TRM_PROF));
+            Sigla = cursor.getString(cursor.getColumnIndexOrThrow(BancoCria.TRM_SIGLA));
+            Sala = cursor.getString(cursor.getColumnIndexOrThrow(BancoCria.TRM_SALA));
+            Materia = cursor.getString(cursor.getColumnIndexOrThrow(BancoCria.TRM_MATERIA));
+            txtProf.setText("Prof " + Prof + "\nMat: " + Sigla);
+            txtSala.setText("Sala: " + Sala);
+
+            this.Turma = Turma;
+            this.Sigla = Sigla;
+            this.Materia = Materia;
+        } else {
+            Toast.makeText(MainActivity.this, "Não foi encontrado aula para este dia: "+ DataNumParaFeira(Data)+"\n Verifique se essa informação está correta.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private Cursor CarregaAulaBD(String Data, String Aula) {
+        BancoController crud = new BancoController(getBaseContext());
+        Cursor cursor= crud.carregaTurma(Data, Aula);
+        return cursor;
+    }
+    private String DiaDaSemana() {
         String diaDaSemana;
         if (ApertouOBotao) {
-            diaDaSemana = (String) spnOpcoes.getSelectedItem();
+            diaDaSemana = FormataData.DataNumParaFeira((String)spnOpcoes.getSelectedItem());
             ApertouOBotao = false;
         } else {
-            diaDaSemana = ObterData();
+            diaDaSemana = FormataData.DataNumParaFeira(FormataData_ObtemAuto());
         }
-        txtApresentacao.setText("S.I. 5º Semestre - Noite (" + diaDaSemana + ")");
-        txtProf.setText("Prof " + getProfessor() + "\nMat: " + getSigla());
-        txtSala.setText("Sala: " + getSala());
-        txtProfDois.setText("Prof: " + getProfessorDois() + "\nMat: " + getSiglaDois());
-        txtSalaDois.setText("Sala: " + getSalaDois());
+        return diaDaSemana;
     }
 
     private void verificaAviso () {
