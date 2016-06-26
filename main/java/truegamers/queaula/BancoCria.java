@@ -15,7 +15,7 @@ public class BancoCria extends SQLiteOpenHelper {
     public static final String TABELA_CONFIGS = "configs", AVISO_ESCOLHE_DIA ="aviso_dia";
 //Tabela Turma
     public static final String TABELA_TURMA="turma",TRM_TURMA="turma", TRM_DATA="data", TRM_SALA="sala", TRM_AULA="aula", TRM_PROF="prof", TRM_SIGLA="sigla", TRM_MATERIA="materia";
-    private static final int VERSAO = 2;
+    private static final int VERSAO = 3;
 
 
 
@@ -32,16 +32,14 @@ public class BancoCria extends SQLiteOpenHelper {
 
         String sqlTurmas = "CREATE TABLE "+TABELA_TURMA+"("
                 +ID+" integer primary key autoincrement,"
-                +TRM_TURMA+" VARCHAR( 10 ) NULL,"
-                +TRM_DATA+" integer(1) NULL,"
-                +TRM_SALA+" VARCHAR(4) NULL,"
-                +TRM_AULA+" integer(1) NULL,"
                 +TRM_PROF+" VARCHAR(20) NULL,"
-                +TRM_SIGLA+" VARCHAR(10) NULL,"
                 +TRM_MATERIA+" VARCHAR(30) NULL,"
-        +");";
-
-
+                +TRM_AULA+" VARCHAR(1) NULL,"
+                +TRM_SIGLA+" VARCHAR(10) NULL,"
+                +TRM_TURMA+" VARCHAR(10) NULL,"
+                +TRM_SALA+" VARCHAR(4) NULL,"
+                +TRM_DATA+" VARCHAR(1) NULL"
+                +");";
         db.execSQL(sqlTurmas);
     }
     @Override
