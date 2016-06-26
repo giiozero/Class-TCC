@@ -1,0 +1,93 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".AddTurma.AddTurmaActivity" >
+
+   <TextView
+        android:id="@+id/LblTurma"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Digite Sua Turma"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <EditText
+        android:id="@+id/TxtTurma"
+        android:text="si5p13"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/scrollView"
+        android:layout_toRightOf="@+id/LblTurma"
+        android:layout_alignRight="@+id/scrollView" />
+    <TextView
+        android:id="@+id/Relatorio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15sp"
+        android:text="Resumo:"
+        android:layout_below="@+id/getdata"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <LinearLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="200sp"
+        android:layout_below="@+id/Relatorio"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/scrollView">
+        <ListView
+            android:id="@+id/JsonResult"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#357"
+            android:divider="#FFECECEC"
+            android:dividerHeight="2sp"
+            />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/getdata"
+        android:layout_below="@+id/TxtTurma"
+        android:text="Obter Aula"
+        android:textColor="#FFFFFF"
+        android:textSize="30sp"
+        android:layout_marginTop="10px"
+        android:layout_centerHorizontal="true"
+        android:layout_width="270dp"
+        android:layout_height="60dp"
+        android:background="@drawable/button_green"
+        android:shadowRadius="5"
+        />
+    <Button
+        android:id="@+id/adddata"
+        android:layout_below="@+id/scrollView"
+        android:text="Adicionar Dados"
+        android:textColor="#FFFFFF"
+        android:textSize="30sp"
+        android:layout_marginTop="10px"
+        android:layout_centerHorizontal="true"
+        android:layout_width="270dp"
+        android:layout_height="60dp"
+        android:background="@drawable/button_green"
+        android:shadowRadius="5"
+        />
+    <Button
+        android:id="@+id/pular"
+        android:layout_below="@+id/adddata"
+        android:text="Pular"
+        android:textColor="#FFFFFF"
+        android:textSize="30sp"
+        android:layout_marginTop="10px"
+        android:layout_centerHorizontal="true"
+        android:layout_width="270dp"
+        android:layout_height="60dp"
+        android:background="@drawable/button_red"
+        android:shadowRadius="5"
+        />
+</RelativeLayout>
