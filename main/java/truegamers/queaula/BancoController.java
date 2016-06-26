@@ -44,21 +44,38 @@ public class BancoController {
         return cursor;
     }
 
-    public Cursor carregaTurma(){
-        Cursor cursor;
-        String[] campos = {banco.ID,banco.TRM_TURMA, banco.TRM_AULA, banco.TRM_DATA,banco.TRM_MATERIA, banco.TRM_PROF, banco.TRM_SALA, banco.TRM_SIGLA};
-        db = banco.getReadableDatabase();
-        cursor = db.query(banco.TABELA_TURMA, campos, null, null, null, null, null, null);
+    public String insertAulas(String Turma, String Aula, String Data, String Materia, String Sigla, String Prof, String Sala) {
+        ContentValues valores = new ContentValues();
+        db = banco.getWritableDatabase();
+        long resultado;
+        valores.put(banco.TRM_TURMA, Turma);
+        valores.put(banco.TRM_AULA, Aula);
+        valores.put(banco.TRM_DATA, Data);
+        valores.put(banco.TRM_MATERIA, Materia);
+        valores.put(banco.TRM_SIGLA, Sigla);
+        valores.put(banco.TRM_PROF, Prof);
+        valores.put(banco.TRM_SALA, Sala);
 
-        if(cursor!=null){
-            cursor.moveToFirst();
-        }
-        db.close();
-        return cursor;
+
+        resultado = db.insert(BancoCria.TABELA_TURMA, null, valores);
+        if (resultado ==-1)
+            return "Erro ao inserir dados da turma.";
+        else
+            return "Turma Adicionada com Sucesso.";
     }
 
 
+    public Cursor carregaTurma(String Data, String Aula) {
+            Cursor cursor;
+           String[] campos = {banco.ID, banco.TRM_TURMA, banco.TRM_AULA, banco.TRM_DATA, banco.TRM_MATERIA, banco.TRM_PROF, banco.TRM_SALA, banco.TRM_SIGLA};
+            db = banco.getReadableDatabase();
+            String where = banco.TRM_DATA + "=" + Data+" AND "+ banco.TRM_AULA+ "="+ Aula;
+            cursor = db.query(banco.TABELA_TURMA, campos, where, null, null, null, banco.ID+" DESC", null);
+
+            if (cursor != null) {
+                cursor.moveToFirst();
+            }
+            db.close();
+            return cursor;
+    }
 }
-
-
-
